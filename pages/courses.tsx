@@ -1,1 +1,1 @@
-export { CoursesPage as default } from '../src/components';
+export { CoursesPage as default } from "../src/components";

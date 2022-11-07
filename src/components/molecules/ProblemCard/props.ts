@@ -1,5 +1,5 @@
 export type Props = {
-    title: string;
-    subtitle: string;
-    link: string;
-}
+  title: string;
+  subtitle: string;
+  link: string;
+};

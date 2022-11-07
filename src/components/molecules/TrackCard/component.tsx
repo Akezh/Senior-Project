@@ -1,20 +1,49 @@
-import { FC } from 'react';
-import Image from 'next/image';
-import { Props } from './props';
+import Image from "next/image";
+import { FC } from "react";
 
-export const TrackCard: FC<Props> = ({ title, subtitle, imageSrc, difficulty }) => {
-    return (
-        <div className="relative">
-            <Image className="rounded-tr-xl" width={400} height={400} src={imageSrc} alt="track" />
+import { Props } from "./props";
 
-            <div className="flex align-center justify-center p-4 rounded-bl-xl rounded-br-xl" style={{ background: '#0F1926' }}>
-                {difficulty === 'easy' && <p className="uppercase text-base" style={{ color: '#9FEE3D' }}>EASY</p>}
-                {difficulty === 'medium' && <p className="uppercase text-base" style={{ color: '#F3B23E' }}>MEDIUM</p>}
-                {difficulty === 'hard' && <p className="uppercase text-base" style={{ color: '#EC5048' }}>HARD</p>}
-            </div>
+export const TrackCard: FC<Props> = ({
+  title,
+  subtitle,
+  imageSrc,
+  difficulty,
+}) => {
+  return (
+    <div className="relative">
+      <Image
+        className="rounded-tr-xl"
+        width={400}
+        height={400}
+        src={imageSrc}
+        alt="track"
+      />
 
-            <p className="font-bold text-white text-lg ml-2 mt-4">{title}</p>
-            <p className="font-bold text-sm ml-2 mt-1" style={{ color: '#909FB8' }}>{subtitle}</p>
-        </div>
-    )
-}
+      <div
+        className="flex justify-center p-4 align-center rounded-bl-xl rounded-br-xl"
+        style={{ background: "#0F1926" }}
+      >
+        {difficulty === "easy" && (
+          <p className="text-base uppercase" style={{ color: "#9FEE3D" }}>
+            EASY
+          </p>
+        )}
+        {difficulty === "medium" && (
+          <p className="text-base uppercase" style={{ color: "#F3B23E" }}>
+            MEDIUM
+          </p>
+        )}
+        {difficulty === "hard" && (
+          <p className="text-base uppercase" style={{ color: "#EC5048" }}>
+            HARD
+          </p>
+        )}
+      </div>
+
+      <p className="mt-4 ml-2 text-lg font-bold text-white">{title}</p>
+      <p className="mt-1 ml-2 text-sm font-bold" style={{ color: "#909FB8" }}>
+        {subtitle}
+      </p>
+    </div>
+  );
+};
