@@ -6,8 +6,8 @@ export const CoursesPage = () => {
   return (
     <PageTemplate>
       <div className="container mx-auto mt-12">
-        <p className="mb-4 text-xl text-white">Tracks</p>
-        <p className="text-base text-white">
+        <p className="mb-4 text-2xl font-bold text-white">Tracks</p>
+        <p className="text-base text-white" style={{ color: "#9FAEC8" }}>
           Tracks create by users, companies and universities.
         </p>
 

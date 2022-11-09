@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { FC } from "react";
 
 import { Props } from "./props";
@@ -40,8 +41,10 @@ export const TrackCard: FC<Props> = ({
         )}
       </div>
 
-      <p className="mt-4 ml-2 text-lg font-bold text-white">{title}</p>
-      <p className="mt-1 ml-2 text-sm font-bold" style={{ color: "#909FB8" }}>
+      <Link href="/course/1">
+        <p className="mt-4 ml-2 text-lg font-bold text-white">{title}</p>
+      </Link>
+      <p className="mt-1 ml-2 text-sm" style={{ color: "#909FB8" }}>
         {subtitle}
       </p>
     </div>
