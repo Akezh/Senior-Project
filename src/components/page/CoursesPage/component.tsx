@@ -1,5 +1,6 @@
 import { TrackCard } from "../../molecules";
 import { PageTemplate } from "../../templates";
+import { coursesData } from "./mock";
 
 export const CoursesPage = () => {
   return (
@@ -11,42 +12,15 @@ export const CoursesPage = () => {
         </p>
 
         <div className="mt-12 grid grid-cols-5 gap-10">
-          <TrackCard
-            title="Arrays"
-            subtitle="10 problems"
-            difficulty="easy"
-            imageSrc="/mock_track.png"
-          />
-          <TrackCard
-            title="Arrays"
-            subtitle="10 problems"
-            difficulty="medium"
-            imageSrc="/mock_track.png"
-          />
-          <TrackCard
-            title="Arrays"
-            subtitle="10 problems"
-            difficulty="hard"
-            imageSrc="/mock_track.png"
-          />
-          <TrackCard
-            title="Arrays"
-            subtitle="10 problems"
-            difficulty="medium"
-            imageSrc="/mock_track.png"
-          />
-          <TrackCard
-            title="Arrays"
-            subtitle="10 problems"
-            difficulty="medium"
-            imageSrc="/mock_track.png"
-          />
-          <TrackCard
-            title="Arrays"
-            subtitle="10 problems"
-            difficulty="medium"
-            imageSrc="/mock_track.png"
-          />
+          {coursesData?.map(({ title, subtitle, difficulty, imageSrc }) => (
+            <TrackCard
+              key={title}
+              title={title}
+              subtitle={subtitle}
+              difficulty={difficulty}
+              imageSrc={imageSrc}
+            />
+          ))}
         </div>
       </div>
     </PageTemplate>
