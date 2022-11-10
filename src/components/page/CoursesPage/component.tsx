@@ -11,7 +11,7 @@ export const CoursesPage = () => {
           Tracks create by users, companies and universities.
         </p>
 
-        <div className="mt-12 grid grid-cols-5 gap-10">
+        <div className="mt-12 grid md:grid-cols-5 gap-10 grid-cols-3">
           {coursesData?.map(({ title, subtitle, difficulty, imageSrc }) => (
             <TrackCard
               key={title}

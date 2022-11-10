@@ -7,7 +7,7 @@ export const PageTemplate: FC<Props> = ({ children }) => {
   return (
     <>
       <Header />
-      {children}
+      <div className="px-5 mb-10 md:px-0">{children}</div>
     </>
   );
 };
