@@ -117,7 +117,7 @@ export const AuthPage = () => {
   }, [query]);
 
   return (
-    <PageTemplate>
+    <PageTemplate className="px-5 md:px-0">
       <div className="max-w-xl mx-auto mt-10 md:mt-20">
         <Link href="/" className="flex items-center justify-center">
           <img
