@@ -7,16 +7,66 @@ import { PageTemplate } from "../../templates";
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 
-export const AuthPage = () => {
-  const { query } = useRouter();
-  const [isLogin, setLogin] = useState(true);
+const RegisterForm = () => {
+  const { register, handleSubmit, watch } = useForm();
+  const [email, password, confirmPassword] = watch([
+    "email",
+    "password",
+    "confirmPassword",
+  ]);
+  const [validForm, setValidForm] = useState(false);
+
+  const onSubmit: SubmitHandler<FieldValues> = useCallback((data) => {
+    console.log(data);
+  }, []);
+
+  useEffect(() => {
+    setValidForm(
+      password && confirmPassword === password && EMAIL_REGEX.test(email)
+    );
+  }, [email, password, confirmPassword]);
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input
+        type="text"
+        placeholder="Email"
+        className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
+        {...register("email", {
+          required: true,
+          maxLength: 30,
+        })}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
+        {...register("password", { required: true, maxLength: 30 })}
+      />
+      <input
+        type="password"
+        placeholder="Confirm password"
+        className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
+        {...register("confirmPassword", {
+          required: true,
+          maxLength: 30,
+        })}
+      />
+      <button
+        type="submit"
+        className="w-full py-5 mt-8 text-sm tracking-wider text-center uppercase rounded-md ont-medium disabled:bg-gray-700 bg-green-550 transition-all hover:bg-opacity-90"
+        disabled={!validForm}
+      >
+        Continue
+      </button>
+    </form>
+  );
+};
+
+const LoginForm = () => {
   const { register, handleSubmit, watch } = useForm();
   const [email, password] = watch(["email", "password"]);
   const [validForm, setValidForm] = useState(false);
-
-  const handleFormAction = useCallback(() => {
-    setLogin((login) => !login);
-  }, []);
 
   const onSubmit: SubmitHandler<FieldValues> = useCallback((data) => {
     console.log(data);
@@ -26,13 +76,49 @@ export const AuthPage = () => {
     setValidForm(password && EMAIL_REGEX.test(email));
   }, [email, password]);
 
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input
+        type="text"
+        placeholder="Email"
+        className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
+        {...register("email", {
+          required: true,
+          maxLength: 30,
+        })}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
+        {...register("password", { required: true, maxLength: 30 })}
+      />
+      <button
+        type="submit"
+        className="w-full py-5 mt-8 text-sm tracking-wider text-center uppercase rounded-md ont-medium disabled:bg-gray-700 bg-green-550 transition-all hover:bg-opacity-90"
+        disabled={!validForm}
+      >
+        Continue
+      </button>
+    </form>
+  );
+};
+
+export const AuthPage = () => {
+  const { query } = useRouter();
+  const [isLogin, setLogin] = useState(true);
+
+  const handleFormAction = useCallback(() => {
+    setLogin((login) => !login);
+  }, []);
+
   useEffect(() => {
     setLogin(!!query.login);
   }, [query]);
 
   return (
     <PageTemplate>
-      <div className="max-w-xl mx-auto mt-32">
+      <div className="max-w-xl mx-auto mt-10 md:mt-20">
         <Link href="/" className="flex items-center justify-center">
           <img
             src="https://flowbite.com/docs/images/logo.svg"
@@ -47,30 +133,7 @@ export const AuthPage = () => {
           <p className="text-xl text-gray-300">
             {isLogin ? "Sign in to your account" : "Register new account"}
           </p>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <input
-              type="text"
-              placeholder="Email"
-              className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
-              {...register("email", {
-                required: true,
-                maxLength: 30,
-              })}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
-              {...register("password", { required: true, maxLength: 30 })}
-            />
-            <button
-              type="submit"
-              className="w-full py-5 mt-8 text-sm tracking-wider text-center uppercase rounded-md ont-medium disabled:bg-gray-700 bg-green-550 transition-all hover:bg-opacity-90"
-              disabled={!validForm}
-            >
-              Continue
-            </button>
-          </form>
+          {isLogin ? <LoginForm /> : <RegisterForm />}
         </div>
         <div className="px-12 py-8 mt-10 rounded-md bg-gray-750">
           <div className="flex items-center justify-between">
