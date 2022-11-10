@@ -1,18 +1,30 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import { PageTemplate } from "../../templates";
+
+const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 
 export const AuthPage = () => {
   const { query } = useRouter();
   const [isLogin, setLogin] = useState(true);
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const { register, handleSubmit, watch } = useForm();
+  const [email, password] = watch(["email", "password"]);
+  const [validForm, setValidForm] = useState(false);
 
   const handleFormAction = useCallback(() => {
     setLogin((login) => !login);
   }, []);
+
+  const onSubmit: SubmitHandler<FieldValues> = useCallback((data) => {
+    console.log(data);
+  }, []);
+
+  useEffect(() => {
+    setValidForm(password && EMAIL_REGEX.test(email));
+  }, [email, password]);
 
   useEffect(() => {
     setLogin(!!query.login);
@@ -35,26 +47,30 @@ export const AuthPage = () => {
           <p className="text-xl text-gray-300">
             {isLogin ? "Sign in to your account" : "Register new account"}
           </p>
-          <input
-            type="text"
-            placeholder="Email"
-            className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button
-            className="w-full py-5 mt-8 text-sm tracking-wider text-center uppercase rounded-md ont-medium disabled:bg-gray-700 bg-green-550 transition-all hover:bg-opacity-90"
-            disabled={!email || !password}
-          >
-            Continue
-          </button>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <input
+              type="text"
+              placeholder="Email"
+              className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
+              {...register("email", {
+                required: true,
+                maxLength: 30,
+              })}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
+              {...register("password", { required: true, maxLength: 30 })}
+            />
+            <button
+              type="submit"
+              className="w-full py-5 mt-8 text-sm tracking-wider text-center uppercase rounded-md ont-medium disabled:bg-gray-700 bg-green-550 transition-all hover:bg-opacity-90"
+              disabled={!validForm}
+            >
+              Continue
+            </button>
+          </form>
         </div>
         <div className="px-12 py-8 mt-10 rounded-md bg-gray-750">
           <div className="flex items-center justify-between">
