@@ -23,11 +23,7 @@ export const CoursePage = () => {
             subtitle="Explore matrices and the common problems"
             link="/"
           />
-          <ProblemCard
-            title="3D Arrays"
-            subtitle="Learn 3D arrays"
-            link="/"
-          />
+          <ProblemCard title="3D Arrays" subtitle="Learn 3D arrays" link="/" />
         </div>
       </div>
     </PageTemplate>
