@@ -14,18 +14,18 @@ export const CoursePage = () => {
 
         <div className="grid grid-rows-20 gap-4">
           <ProblemCard
-            title="2D Arrays"
-            subtitle="Problem solving stuff"
+            title="1D Arrays"
+            subtitle="Discover how to iterate and work with 1D Arrays"
             link="/"
           />
           <ProblemCard
             title="2D Arrays"
-            subtitle="Problem solving stuff"
+            subtitle="Explore matrices and the common problems"
             link="/"
           />
           <ProblemCard
-            title="2D Arrays"
-            subtitle="Problem solving stuff"
+            title="3D Arrays"
+            subtitle="Learn 3D arrays"
             link="/"
           />
         </div>

@@ -126,7 +126,7 @@ export const AuthPage = () => {
             alt="Company Logo"
           />
           <span className="self-center text-3xl font-semibold whitespace-nowrap dark:text-white">
-            Seniorita
+            CodePower
           </span>
         </Link>
         <div className="px-12 py-8 mt-10 rounded-md bg-gray-750">
