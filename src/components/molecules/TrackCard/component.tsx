@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { FC } from "react";
 
@@ -12,7 +11,7 @@ export const TrackCard: FC<Props> = ({
 }) => {
   return (
     <div className="relative">
-      <Image
+      <img
         className="rounded-tr-xl"
         width={400}
         height={400}
