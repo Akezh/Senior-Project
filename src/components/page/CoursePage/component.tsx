@@ -16,14 +16,18 @@ export const CoursePage = () => {
           <ProblemCard
             title="1D Arrays"
             subtitle="Discover how to iterate and work with 1D Arrays"
-            link="/"
+            link="/problem/1"
           />
           <ProblemCard
             title="2D Arrays"
             subtitle="Explore matrices and the common problems"
-            link="/"
+            link="/problem/2"
           />
-          <ProblemCard title="3D Arrays" subtitle="Learn 3D arrays" link="/" />
+          <ProblemCard
+            title="3D Arrays"
+            subtitle="Learn 3D arrays"
+            link="/problem/3"
+          />
         </div>
       </div>
     </PageTemplate>

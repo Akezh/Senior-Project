@@ -10,7 +10,7 @@ export const TrackCard: FC<Props> = ({
   difficulty,
 }) => {
   return (
-    <div className="relative">
+    <Link href="/course/1" className="relative">
       <img
         className="rounded-tr-xl"
         width={400}
@@ -39,13 +39,10 @@ export const TrackCard: FC<Props> = ({
           </p>
         )}
       </div>
-
-      <Link href="/course/1">
-        <p className="mt-4 ml-2 text-lg font-bold text-white">{title}</p>
-      </Link>
+      <p className="mt-4 ml-2 text-lg font-bold text-white">{title}</p>
       <p className="mt-1 ml-2 text-sm" style={{ color: "#909FB8" }}>
         {subtitle}
       </p>
-    </div>
+    </Link>
   );
 };

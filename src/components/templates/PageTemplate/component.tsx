@@ -12,7 +12,9 @@ export const PageTemplate: FC<Props> = ({
   return (
     <div>
       <Header />
-      <div className={clsx(!offDefaultStyles && "px-5 md:px-0", className)}>
+      <div
+        className={clsx(!offDefaultStyles && "px-5 md:px-0 pb-10", className)}
+      >
         {children}
       </div>
     </div>
