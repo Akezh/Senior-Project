@@ -2,32 +2,83 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
+import { useAPIService } from "../../../../core/api";
+import { useAccountProfile } from "../../../hooks";
 import { PageTemplate } from "../../templates";
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 
 const RegisterForm = () => {
+  const router = useRouter();
+  const { setLoggedProfile } = useAccountProfile();
+  const { register: registerApi } = useAPIService();
   const { register, handleSubmit, watch } = useForm();
-  const [email, password, confirmPassword] = watch([
+  const [username, fullname, email, password, confirmPassword] = watch([
+    "username",
+    "fullname",
     "email",
     "password",
     "confirmPassword",
   ]);
   const [validForm, setValidForm] = useState(false);
 
-  const onSubmit: SubmitHandler<FieldValues> = useCallback((data) => {
-    console.log(data);
-  }, []);
+  const onSubmit: SubmitHandler<FieldValues> = useCallback(async (data) => {
+    const registerPayloadData = {
+      username: data?.username || "",
+      fullname: data?.fullname || "",
+      email: data?.email || "",
+      password: data?.password || "",
+    };
+
+    try {
+      const responseData = await registerApi(registerPayloadData);
+      if (!responseData?.token) throw new Error("Registration failed");
+      setLoggedProfile({
+        username: data?.username || "",
+        fullname: data?.fullname || "",
+        email: data?.email || "",
+      });
+      toast.success("Registration completed. Transferring to home page...");
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+    } catch (error) {
+      toast.error("Registration failed, try again later.");
+    }
+  }, [registerApi, router, setLoggedProfile()]);
 
   useEffect(() => {
     setValidForm(
-      password && confirmPassword === password && EMAIL_REGEX.test(email)
+      username &&
+        fullname &&
+        EMAIL_REGEX.test(email) &&
+        password &&
+        confirmPassword === password
     );
-  }, [email, password, confirmPassword]);
+  }, [username, fullname, email, password, confirmPassword]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <input
+        type="text"
+        placeholder="First name"
+        className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
+        {...register("username", {
+          required: true,
+          maxLength: 30,
+        })}
+      />
+      <input
+        type="text"
+        placeholder="Last name"
+        className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
+        {...register("fullname", {
+          required: true,
+          maxLength: 30,
+        })}
+      />
       <input
         type="text"
         placeholder="Email"
@@ -64,13 +115,35 @@ const RegisterForm = () => {
 };
 
 const LoginForm = () => {
+  const router = useRouter();
+  const { setLoggedProfile } = useAccountProfile();
+  const { login } = useAPIService();
   const { register, handleSubmit, watch } = useForm();
   const [email, password] = watch(["email", "password"]);
   const [validForm, setValidForm] = useState(false);
 
-  const onSubmit: SubmitHandler<FieldValues> = useCallback((data) => {
-    console.log(data);
-  }, []);
+  const onSubmit: SubmitHandler<FieldValues> = useCallback(async (data) => {
+    const loginPayloadData = {
+      email: data?.email || "",
+      password: data?.password || "",
+    };
+
+    try {
+      const responseData = await login(loginPayloadData);
+      if (!responseData?.token) throw new Error("Login failed");
+      setLoggedProfile({
+        username: responseData?.username || "",
+        fullname: responseData?.fullname || "",
+        email: responseData?.email || "",
+      });
+      toast.success("Login completed. Transferring to home page...");
+      setTimeout(() => {
+        router.push("/");
+      }, 2000);
+    } catch (error) {
+      toast.error("Login failed, try again later.");
+    }
+  }, [login, router, setLoggedProfile]);
 
   useEffect(() => {
     setValidForm(password && EMAIL_REGEX.test(email));
