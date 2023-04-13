@@ -1,7 +1,22 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { FC } from "react";
+import { toast } from "react-toastify";
+
+import { useAccountProfile } from "../../../hooks";
 
 export const Header: FC = () => {
+  const { isLoggedIn, fullname, removeLoggedProfile } = useAccountProfile();
+  const router = useRouter();
+
+  const onSignOutClick = () => {
+    removeLoggedProfile();
+    toast.info("You have been signed out. Moving to sign in page...");
+    setTimeout(() => {
+      router.push("/auth?login=true");
+    }, 2000);
+  };
+
   return (
     <header>
       <nav className="px-4 bg-white border-gray-200 lg:px-6 py-2.5 dark:bg-gray-800">
@@ -17,18 +32,33 @@ export const Header: FC = () => {
             </span>
           </Link>
           <div className="flex items-center lg:order-2">
-            <Link
-              href="/auth?login=true"
-              className="px-4 py-2 mr-2 text-sm font-medium text-gray-800 rounded-lg dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 lg:px-5 lg:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/auth"
-              className="px-4 py-2 mr-2 text-sm font-medium text-gray-800 rounded-lg dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 lg:px-5 lg:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-            >
-              Sign up
-            </Link>
+            {!isLoggedIn ? (
+              <>
+                <Link
+                  href="/auth?login=true"
+                  className="px-4 py-2 mr-2 text-sm font-medium text-gray-800 rounded-lg dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 lg:px-5 lg:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/auth"
+                  className="px-4 py-2 mr-2 text-sm font-medium text-gray-800 rounded-lg dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 lg:px-5 lg:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+                >
+                  Sign up
+                </Link>
+              </>
+            ) : (
+              <>
+                Hi {fullname}!
+                <button
+                  onClick={onSignOutClick}
+                  type="button"
+                  className="inline-flex items-center p-2 ml-1 text-red-500 rounded-lg text-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-red-400 dark:hover:bg-gray-700 dark:focus:ring-red-600"
+                >
+                  Sign Out
+                </button>
+              </>
+            )}
             <button
               data-collapse-toggle="mobile-menu-2"
               type="button"
@@ -102,12 +132,12 @@ export const Header: FC = () => {
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  href="/problem/create"
                   className="block py-2 pl-3 pr-4 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
                 >
-                  <Link href="/problem/create">Create problem</Link>
-                </a>
+                  Create problem
+                </Link>
               </li>
             </ul>
           </div>
