@@ -47,8 +47,8 @@ export const useAccountProfile = singletonHook(
     username: "",
     fullname: "",
     email: "",
-    removeLoggedProfile: () => {},
-    setLoggedProfile: () => {},
+    removeLoggedProfile: () => undefined,
+    setLoggedProfile: () => undefined,
   },
   useAccountProfileImpl
 );

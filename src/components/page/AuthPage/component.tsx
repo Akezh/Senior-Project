@@ -24,30 +24,33 @@ const RegisterForm = () => {
   ]);
   const [validForm, setValidForm] = useState(false);
 
-  const onSubmit: SubmitHandler<FieldValues> = useCallback(async (data) => {
-    const registerPayloadData = {
-      username: data?.username || "",
-      fullname: data?.fullname || "",
-      email: data?.email || "",
-      password: data?.password || "",
-    };
-
-    try {
-      const responseData = await registerApi(registerPayloadData);
-      if (!responseData?.token) throw new Error("Registration failed");
-      setLoggedProfile({
+  const onSubmit: SubmitHandler<FieldValues> = useCallback(
+    async (data) => {
+      const registerPayloadData = {
         username: data?.username || "",
         fullname: data?.fullname || "",
         email: data?.email || "",
-      });
-      toast.success("Registration completed. Transferring to home page...");
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
-    } catch (error) {
-      toast.error("Registration failed, try again later.");
-    }
-  }, [registerApi, router, setLoggedProfile()]);
+        password: data?.password || "",
+      };
+
+      try {
+        const responseData = await registerApi(registerPayloadData);
+        if (!responseData?.token) throw new Error("Registration failed");
+        setLoggedProfile({
+          username: data?.username || "",
+          fullname: data?.fullname || "",
+          email: data?.email || "",
+        });
+        toast.success("Registration completed. Transferring to home page...");
+        setTimeout(() => {
+          router.push("/");
+        }, 2000);
+      } catch (error) {
+        toast.error("Registration failed, try again later.");
+      }
+    },
+    [registerApi, router, setLoggedProfile]
+  );
 
   useEffect(() => {
     setValidForm(
@@ -122,28 +125,31 @@ const LoginForm = () => {
   const [email, password] = watch(["email", "password"]);
   const [validForm, setValidForm] = useState(false);
 
-  const onSubmit: SubmitHandler<FieldValues> = useCallback(async (data) => {
-    const loginPayloadData = {
-      email: data?.email || "",
-      password: data?.password || "",
-    };
+  const onSubmit: SubmitHandler<FieldValues> = useCallback(
+    async (data) => {
+      const loginPayloadData = {
+        email: data?.email || "",
+        password: data?.password || "",
+      };
 
-    try {
-      const responseData = await login(loginPayloadData);
-      if (!responseData?.token) throw new Error("Login failed");
-      setLoggedProfile({
-        username: responseData?.username || "",
-        fullname: responseData?.fullname || "",
-        email: responseData?.email || "",
-      });
-      toast.success("Login completed. Transferring to home page...");
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
-    } catch (error) {
-      toast.error("Login failed, try again later.");
-    }
-  }, [login, router, setLoggedProfile]);
+      try {
+        const responseData = await login(loginPayloadData);
+        if (!responseData?.token) throw new Error("Login failed");
+        setLoggedProfile({
+          username: responseData?.username || "",
+          fullname: responseData?.fullname || "",
+          email: responseData?.email || "",
+        });
+        toast.success("Login completed. Transferring to home page...");
+        setTimeout(() => {
+          router.push("/");
+        }, 2000);
+      } catch (error) {
+        toast.error("Login failed, try again later.");
+      }
+    },
+    [login, router, setLoggedProfile]
+  );
 
   useEffect(() => {
     setValidForm(password && EMAIL_REGEX.test(email));
