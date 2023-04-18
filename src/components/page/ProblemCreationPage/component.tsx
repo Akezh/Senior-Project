@@ -1,10 +1,13 @@
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 
+import axios from "axios";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import Select from "react-select";
+import { toast } from "react-toastify";
 
+import { API_URL } from "../../../../core/config";
 import { PageTemplate } from "../../templates";
 import { categoryOptions, difficultyOptions } from "./selectorOptions";
 
@@ -25,6 +28,7 @@ export const ProblemCreationPage = () => {
   const [stepperActive, setStepperActive] = useState(1);
 
   const [title, setTitle] = useState("");
+  const [track, setTrack] = useState("");
   const [difficulty, setDifficulty] = useState({
     value: "Easy",
     label: "Easy",
@@ -41,7 +45,13 @@ export const ProblemCreationPage = () => {
     },
   });
 
-  const handleNext = () => setStepperActive((step) => step + 1);
+  const handleNext = () => {
+    if (title && difficulty && categories && description) {
+      setStepperActive((step) => step + 1);
+    } else {
+      toast.error("Please fill all the required fields");
+    }
+  };
   const handleBack = () => setStepperActive((step) => step - 1);
   const addTestCase = () => {
     setCountTestCases((prev) => prev + 1);
@@ -51,6 +61,73 @@ export const ProblemCreationPage = () => {
       [countTestCases + 1]: {
         input: "",
         output: "",
+      },
+    }));
+  };
+
+  const removeTestCase = () => {
+    setCountTestCases((prev) => prev - 1);
+    setTestCases((prev) => {
+      const newTestCases = { ...prev };
+      delete newTestCases[countTestCases];
+      return newTestCases;
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!testCases || Object.keys(testCases).length === 0) {
+      toast.error("Please add test cases");
+      return;
+    }
+    const problemData = {
+      track,
+      title,
+      difficulty: difficulty.value,
+      categories,
+      description,
+      solutions,
+    };
+
+    try {
+      const response = await axios.post(`${API_URL}/problem`, problemData);
+      if (!response.data.message) throw new Error("Error in creating problem");
+      toast.success("Problem has been created successfully");
+
+      const responseTestCase = await axios.post(
+        `${API_URL}/problem/testcase`,
+        testCases
+      );
+      if (!responseTestCase.data.message)
+        throw new Error("Error in creating test cases");
+      toast.success("Test cases has been created successfully");
+    } catch (err) {
+      console.log(err);
+    }
+    console.log("testCases", testCases);
+  };
+
+  const handleInputAreaChange = (
+    fieldIndex: number,
+    e: ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setTestCases((prev) => ({
+      ...prev,
+      [fieldIndex]: {
+        ...prev[fieldIndex],
+        input: e.target.value,
+      },
+    }));
+  };
+
+  const handleOutputAreaChange = (
+    fieldIndex: number,
+    e: ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setTestCases((prev) => ({
+      ...prev,
+      [fieldIndex]: {
+        ...prev[fieldIndex],
+        output: e.target.value,
       },
     }));
   };
@@ -90,55 +167,68 @@ export const ProblemCreationPage = () => {
         {stepperActive === 1 && (
           <>
             <div className="grid grid-cols-2">
-              <div>
-                <div className="mb-8">
-                  <p
-                    className="mb-2 text-lg font-bold text-white"
-                    style={{ color: "#9FAEC8" }}
-                  >
-                    Title
-                  </p>
-                  <input
-                    className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                    type="text"
-                    id="problemName"
-                    placeholder="Pick a title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                </div>
-                <div className="mb-8">
-                  <p
-                    className="mb-2 text-lg font-bold text-white"
-                    style={{ color: "#9FAEC8" }}
-                  >
-                    Category
-                  </p>
-                  <Select
-                    className="text-black"
-                    defaultValue={categories}
-                    onChange={setCategories as never}
-                    options={categoryOptions}
-                    placeholder="Select Category"
-                    isMulti
-                    isSearchable
-                  />
-                </div>
-                <div className="mb-8">
-                  <p
-                    className="mb-2 text-lg font-bold text-white"
-                    style={{ color: "#9FAEC8" }}
-                  >
-                    Difficulty level
-                  </p>
-                  <Select
-                    className="text-black"
-                    defaultValue={difficulty}
-                    onChange={setDifficulty as never}
-                    options={difficultyOptions}
-                    placeholder="Select Difficulty"
-                  />
-                </div>
+              <div className="mb-8 mr-16">
+                <p
+                  className="mb-2 text-lg font-bold text-white"
+                  style={{ color: "#9FAEC8" }}
+                >
+                  Track <span style={{ color: "red" }}>*</span>
+                </p>
+                <Select
+                  className="text-black"
+                  defaultValue={categoryOptions[0]}
+                  onChange={setTrack as never}
+                  options={categoryOptions}
+                  placeholder="Select Track"
+                />
+              </div>
+              <div className="mb-8 mr-16">
+                <p
+                  className="mb-2 text-lg font-bold text-white"
+                  style={{ color: "#9FAEC8" }}
+                >
+                  Title <span style={{ color: "red" }}>*</span>
+                </p>
+                <input
+                  className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                  type="text"
+                  id="problemName"
+                  placeholder="Pick a title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+              <div className="mb-8 mr-16">
+                <p
+                  className="mb-2 text-lg font-bold text-white"
+                  style={{ color: "#9FAEC8" }}
+                >
+                  Category <span style={{ color: "red" }}>*</span>
+                </p>
+                <Select
+                  className="text-black"
+                  defaultValue={categories}
+                  onChange={setCategories as never}
+                  options={categoryOptions}
+                  placeholder="Select Category"
+                  isMulti
+                  isSearchable
+                />
+              </div>
+              <div className="mb-8 mr-16">
+                <p
+                  className="mb-2 text-lg font-bold text-white"
+                  style={{ color: "#9FAEC8" }}
+                >
+                  Difficulty level <span style={{ color: "red" }}>*</span>
+                </p>
+                <Select
+                  className="text-black"
+                  defaultValue={difficulty}
+                  onChange={setDifficulty as never}
+                  options={difficultyOptions}
+                  placeholder="Select Difficulty"
+                />
               </div>
               <div />
             </div>
@@ -146,7 +236,7 @@ export const ProblemCreationPage = () => {
               className="mb-2 text-lg font-bold text-white"
               style={{ color: "#9FAEC8" }}
             >
-              Problem Description
+              Problem Description <span style={{ color: "red" }}>*</span>
             </p>
             <MDEditor
               className="mb-8"
@@ -182,33 +272,42 @@ export const ProblemCreationPage = () => {
               className="mb-2 text-lg font-bold text-white"
               style={{ color: "#9FAEC8" }}
             >
-              Test Cases
+              Test Cases <span style={{ color: "red" }}>*</span>
             </p>
             <div className="grid grid-cols-2 gap-8">
-              {Object.keys(testCases).map((testNumber) => (
+              {Object.keys(testCases).map((testNumber, fieldIndex) => (
                 <>
                   <textarea
                     rows={3}
                     className="block w-full p-2 mt-1 text-black border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     placeholder="you@example.com"
                     value={testCases[testNumber].input}
+                    onChange={(e) => handleInputAreaChange(fieldIndex, e)}
                   ></textarea>
                   <textarea
                     rows={3}
                     className="block w-full p-2 mt-1 text-black border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     placeholder="you@example.com"
                     value={testCases[testNumber].output}
+                    onChange={(e) => handleOutputAreaChange(fieldIndex, e)}
                   ></textarea>
                 </>
               ))}
             </div>
-            <div className="flex justify-center mt-8">
+            <div className="flex justify-center mt-8 gap-12">
               <button
                 type="button"
                 className="px-5 mb-2 mr-2 text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-300 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
                 onClick={addTestCase}
               >
-                Add Test Case
+                Add test case
+              </button>
+              <button
+                type="button"
+                className="px-5 mb-2 mr-2 text-sm font-medium text-white bg-green-700 rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-300 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+                onClick={removeTestCase}
+              >
+                Remove test case
               </button>
             </div>
           </>
@@ -231,6 +330,15 @@ export const ProblemCreationPage = () => {
               className="px-5 mb-2 mr-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
             >
               Next Step
+            </button>
+          )}
+          {stepperActive === 3 && (
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="px-5 mb-2 mr-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            >
+              Submit
             </button>
           )}
         </div>
