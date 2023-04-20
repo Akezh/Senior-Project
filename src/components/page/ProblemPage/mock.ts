@@ -33,3 +33,19 @@ You can return answer in any order.
   <p><code>-10^9 <= target <= 10^9</code></p>
 </div>
 `;
+
+export const PROBLEM_EDITORIAL = `
+This problem is very easy.
+<br />
+<br />
+You just need to code the following:
+<br />
+<br />
+<div style="background-color: #333333; padding: 5px 10px">
+  int a, b; <br /> 
+  cin >> a >> b; <br />
+  cout << a + b;
+</div>
+<br />
+Have fun!
+`;

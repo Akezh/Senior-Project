@@ -1,9 +1,10 @@
 export const config = {
-  supportedLanguages: [
-    { name: "c", text: "C" },
-    { name: "cpp", text: "C++" },
-  ],
   defaultLanguage: "cpp",
 };
+
+export const langConfig = [
+  { value: "cpp", label: "C++" },
+  { value: "c", label: "C" },
+];
 
 export * from "./examples";
