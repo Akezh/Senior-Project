@@ -4,13 +4,14 @@ import { FC } from "react";
 import { Props } from "./props";
 
 export const TrackCard: FC<Props> = ({
+  id,
   title,
   subtitle,
   imageSrc,
   difficulty,
 }) => {
   return (
-    <Link href="/course/1" className="relative">
+    <Link href={`/course/${id}`} className="relative">
       <img
         className="rounded-tr-xl"
         width={400}

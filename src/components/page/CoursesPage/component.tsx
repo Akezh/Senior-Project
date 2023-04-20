@@ -1,15 +1,26 @@
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
-import { TrackCard } from "../../molecules";
+import { axiosApi } from "../../../../core/config";
+import { Spinner, TrackCard } from "../../molecules";
 import { PageTemplate } from "../../templates";
-import { coursesData } from "./mock";
 
 export const CoursesPage = () => {
   const router = useRouter();
+  const [courses, setCourses] = useState<any[] | null>(null);
 
   const createTrack = () => {
     router.push("/course/create");
   };
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      const { data } = await axiosApi.get("/track");
+      setCourses(data);
+    };
+
+    fetchCourses();
+  }, []);
 
   return (
     <PageTemplate>
@@ -20,23 +31,26 @@ export const CoursesPage = () => {
           <button
             type="button"
             onClick={createTrack}
-            className="px-5 mb-2 mr-2 text-sm font-medium text-center text-gray-900 rounded-lg bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 py-2.5"
+            className="hidden px-5 mb-2 mr-2 text-sm font-medium text-center text-gray-900 rounded-lg bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 py-2.5"
           >
             Create track
           </button>
         </div>
         <p className="text-base text-white" style={{ color: "#9FAEC8" }}>
-          Tracks create by users, companies and universities.
+          Tracks are created by your instructors and you can solve them with
+          tracking your progres.
         </p>
 
-        <div className="mt-12 grid md:grid-cols-5 gap-10 grid-cols-3">
-          {coursesData?.map(({ title, subtitle, difficulty, imageSrc }) => (
+        <div className="mt-8 grid md:grid-cols-5 gap-10 grid-cols-3">
+          {courses === null && <Spinner className="w-8" />}
+          {courses?.map(({ id, title, category, difficulty }) => (
             <TrackCard
               key={title}
+              id={id}
               title={title}
-              subtitle={subtitle}
+              subtitle="10 problems"
               difficulty={difficulty}
-              imageSrc={imageSrc}
+              imageSrc={`/${category}.png`}
             />
           ))}
         </div>

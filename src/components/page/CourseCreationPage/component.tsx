@@ -4,35 +4,41 @@ import { useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
 
+import { axiosApi } from "../../../../core/config";
 // import { API_URL } from "../../../../core/config";
 import { PageTemplate } from "../../templates";
-import { difficultyOptions } from "../ProblemCreationPage/selectorOptions";
+import {
+  categoryOptions,
+  difficultyOptions,
+} from "../ProblemCreationPage/selectorOptions";
 
 export const CourseCreationPage = () => {
   const router = useRouter();
   const [trackTitle, setTrackTitle] = useState("");
-  const [numberOfProblems, setNumberOfProblems] = useState(0);
+  const [trackDescription, setTrackDescription] = useState("");
+  const [category, setCategory] = useState({
+    value: categoryOptions[0].value,
+    label: categoryOptions[0].label,
+  });
   const [difficulty, setDifficulty] = useState({
     value: "Easy",
     label: "Easy",
   });
-  const [picture, setPicture] = useState("");
 
   const handleSubmit = async () => {
-    if (!trackTitle || !numberOfProblems || !difficulty || !picture) {
-      toast.error("Please fill all fields");
-      return;
-    }
     const data = {
       title: trackTitle,
       difficulty: difficulty.value,
-      numberOfProblems,
-      picture,
     };
 
     try {
-      // TODO: add endpoint
-      // const response = await axios.post(`${API_URL}/tracks`, data);
+      // TODO: Dulat will solve CORS issues and this will work!
+      axiosApi.post("/track", {
+        title: trackTitle,
+        category: category.value,
+        difficulty: difficulty.value,
+        description: trackDescription,
+      });
       toast.success("Track created successfully");
       router.push("/");
     } catch (error) {
@@ -44,16 +50,20 @@ export const CourseCreationPage = () => {
 
   return (
     <PageTemplate>
-      <div className="container mx-auto mt-12">
+      <div className="mx-auto mt-12">
         <div className="flex justify-center mb-8 align-center">
-          <div className="justify-center w-1/3">
+          <div className="justify-center max-w-2xl">
             <p className="text-2xl font-bold text-white">Create track</p>
-            <div className="my-8">
+            <p className="mt-3 text-gray-400">
+              This page allows you to create a separate track for your students
+              to solve. You can add problems to the track later.
+            </p>
+            <div className="mt-6 mb-8">
               <p
                 className="mb-2 text-lg font-bold text-white"
                 style={{ color: "#9FAEC8" }}
               >
-                Title <span style={{ color: "red" }}>*</span>
+                Title <span className="text-red-500">*</span>
               </p>
               <input
                 className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
@@ -69,7 +79,22 @@ export const CourseCreationPage = () => {
                 className="mb-2 text-lg font-bold text-white"
                 style={{ color: "#9FAEC8" }}
               >
-                Difficulty <span style={{ color: "red" }}>*</span>
+                Category <span className="text-red-500">*</span>
+              </p>
+              <Select
+                className="text-black"
+                defaultValue={category}
+                onChange={setCategory as never}
+                options={categoryOptions}
+                placeholder="Select Track"
+              />
+            </div>
+            <div className="mb-8">
+              <p
+                className="mb-2 text-lg font-bold text-white"
+                style={{ color: "#9FAEC8" }}
+              >
+                Difficulty <span className="text-red-500">*</span>
               </p>
               <Select
                 className="text-black"
@@ -84,35 +109,21 @@ export const CourseCreationPage = () => {
                 className="mb-2 text-lg font-bold text-white"
                 style={{ color: "#9FAEC8" }}
               >
-                Number of problems <span style={{ color: "red" }}>*</span>
+                Track description <span className="text-red-500">*</span>
               </p>
-              <input
-                className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-                type="number"
-                placeholder="Number of problems (numeric)"
-                value={numberOfProblems}
-                onChange={(e) => setNumberOfProblems(Number(e.target.value))}
-              />
-            </div>
-            <div className="mb-8">
-              <p
-                className="mb-2 text-lg font-bold text-white"
-                style={{ color: "#9FAEC8" }}
-              >
-                Upload an image <span style={{ color: "red" }}>*</span>
-              </p>
-              <input
-                value={picture}
-                onChange={(e) => setPicture(e.target.value)}
-                className="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
-                type="file"
+              <textarea
+                className="w-full h-20 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                placeholder="Track description"
+                value={trackDescription}
+                onChange={(e) => setTrackDescription(e.target.value)}
               />
             </div>
             <div className="flex justify-center">
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="px-5 mb-2 mr-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                className="w-full px-5 mb-2 mr-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 py-2.5 focus:outline-none dark:focus:ring-blue-800 disabled:bg-gray-700 transition-all disabled:cursor-not-allowed"
+                disabled={!trackTitle || !trackDescription}
               >
                 Submit
               </button>

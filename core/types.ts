@@ -11,10 +11,10 @@ export type LoginResponseDTO = {
 };
 
 export type RegisterPayloadDTO = {
-  username: string;
   fullname: string;
   email: string;
   password: string;
+  userType: string;
 };
 
 export type RegisterResponseDTO = {

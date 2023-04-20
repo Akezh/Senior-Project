@@ -1,8 +1,7 @@
 import axios from "axios";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 import { useRoleProvider } from "../providers";
-import useLocalStorage from "../src/hooks/useLocalStorage";
 import { API_URL } from "./config";
 import {
   AddProblemPayloadDTO,
@@ -18,7 +17,7 @@ import {
 } from "./types";
 
 export const useAPIService = () => {
-  const { state, setRoleState } = useRoleProvider();
+  const { state } = useRoleProvider();
 
   const config = useMemo(() => {
     const headers: Record<string, string> = { ContentType: "application/json" };
@@ -32,11 +31,7 @@ export const useAPIService = () => {
 
   const login = async (data: LoginPayloadDTO) => {
     try {
-      const response = await axios.post<LoginResponseDTO>(
-        `${API_URL}/auth/authenticate`,
-        data
-      );
-      setRoleState({ token: response.data.token, role: "STUDENT", user: {} });
+      const response = await axios.post(`${API_URL}/auth/authenticate`, data);
       return response.data;
     } catch (error) {
       console.log("Error occured: ", error);
@@ -45,12 +40,11 @@ export const useAPIService = () => {
 
   const register = async (data: RegisterPayloadDTO) => {
     try {
-      const response = await axios.post<RegisterResponseDTO>(
+      const response = await axios.post(
         `${API_URL}/auth/register`,
         data,
         config
       );
-      setRoleState({ token: response.data.token, role: "STUDENT", user: {} });
       return response.data;
     } catch (error) {
       console.log("Error occurred when signing up: ", error);

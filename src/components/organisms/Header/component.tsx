@@ -1,20 +1,39 @@
+import clsx from "clsx";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FC } from "react";
 import { toast } from "react-toastify";
 
+import { useRoleProvider } from "../../../../providers";
 import { useAccountProfile } from "../../../hooks";
 
+const MENU = [
+  {
+    name: "Home",
+    path: "/",
+  },
+  {
+    name: "Create track",
+    path: "/course/create",
+  },
+  {
+    name: "Create problem",
+    path: "/problem/create",
+  },
+];
+
 export const Header: FC = () => {
-  const { isLoggedIn, fullname, removeLoggedProfile } = useAccountProfile();
+  // const { isLoggedIn, fullname, removeLoggedProfile } = useAccountProfile();
+  const role = useRoleProvider();
   const router = useRouter();
 
   const onSignOutClick = () => {
-    removeLoggedProfile();
-    toast.info("You have been signed out. Moving to sign in page...");
-    setTimeout(() => {
-      router.push("/auth?login=true");
-    }, 2000);
+    // removeLoggedProfile();
+    role.logout();
+    toast.info("You have been signed out.");
+    // setTimeout(() => {
+    //   router.push("/auth?login=true");
+    // }, 2000);
   };
 
   return (
@@ -32,7 +51,7 @@ export const Header: FC = () => {
             </span>
           </Link>
           <div className="flex items-center lg:order-2">
-            {!isLoggedIn ? (
+            {!role.state.logged ? (
               <>
                 <Link
                   href="/auth?login=true"
@@ -49,11 +68,11 @@ export const Header: FC = () => {
               </>
             ) : (
               <>
-                Hi {fullname}!
+                Hi {role.state.user.fullname}!
                 <button
                   onClick={onSignOutClick}
                   type="button"
-                  className="inline-flex items-center p-2 ml-1 text-red-500 rounded-lg text-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-red-400 dark:hover:bg-gray-700 dark:focus:ring-red-600"
+                  className="inline-flex items-center p-2 ml-5 text-red-500 rounded-lg text-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-red-400 dark:hover:bg-gray-700 dark:focus:ring-red-600"
                 >
                   Sign Out
                 </button>
@@ -93,54 +112,31 @@ export const Header: FC = () => {
               </svg>
             </button>
           </div>
-          <div
-            className="items-center justify-between hidden w-full lg:flex lg:w-auto lg:order-1"
-            id="mobile-menu-2"
-          >
-            <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
-              <li>
-                <Link
-                  href="/"
-                  className="block py-2 pl-3 pr-4 text-white rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0 dark:text-white"
-                  aria-current="page"
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/course/1"
-                  className="block py-2 pl-3 pr-4 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Problems
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="block py-2 pl-3 pr-4 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Features
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="block py-2 pl-3 pr-4 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Team
-                </a>
-              </li>
-              <li>
-                <Link
-                  href="/problem/create"
-                  className="block py-2 pl-3 pr-4 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
-                >
-                  Create problem
-                </Link>
-              </li>
-            </ul>
-          </div>
+          {role.state.role === "TEACHER" && (
+            <div
+              className="items-center justify-between hidden w-full lg:flex lg:w-auto lg:order-1"
+              id="mobile-menu-2"
+            >
+              <ul className="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+                {MENU.map((item, index) => (
+                  <li key={index}>
+                    <Link
+                      href={item.path}
+                      className={clsx(
+                        "block py-2 pl-3 pr-4 rounded bg-primary-700 lg:bg-transparent lg:text-primary-700 lg:p-0",
+                        router.pathname === item.path
+                          ? "text-white"
+                          : "text-gray-500"
+                      )}
+                      aria-current="page"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </nav>
     </header>

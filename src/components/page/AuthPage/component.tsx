@@ -2,44 +2,54 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import Select from "react-select";
 import { toast } from "react-toastify";
 
 import { useAPIService } from "../../../../core/api";
-import { useAccountProfile } from "../../../hooks";
+import { useRoleProvider } from "../../../../providers";
 import { PageTemplate } from "../../templates";
+
+export const roleOptions = [
+  { label: "Student", value: "STUDENT" },
+  { label: "Teacher", value: "TEACHER" },
+];
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 
 const RegisterForm = () => {
   const router = useRouter();
-  const { setLoggedProfile } = useAccountProfile();
+  const role = useRoleProvider();
   const { register: registerApi } = useAPIService();
   const { register, handleSubmit, watch } = useForm();
-  const [username, fullname, email, password, confirmPassword] = watch([
-    "username",
+  const [fullname, email, password, confirmPassword] = watch([
     "fullname",
     "email",
     "password",
     "confirmPassword",
   ]);
   const [validForm, setValidForm] = useState(false);
+  const [registrationRole, setRegistrationRole] = useState({
+    value: roleOptions[0].value,
+    label: roleOptions[0].label,
+  });
 
   const onSubmit: SubmitHandler<FieldValues> = useCallback(
     async (data) => {
       const registerPayloadData = {
-        username: data?.username || "",
         fullname: data?.fullname || "",
         email: data?.email || "",
         password: data?.password || "",
+        userType: registrationRole.value,
       };
 
       try {
         const responseData = await registerApi(registerPayloadData);
         if (!responseData?.token) throw new Error("Registration failed");
-        setLoggedProfile({
-          username: data?.username || "",
-          fullname: data?.fullname || "",
-          email: data?.email || "",
+        role.setRoleState({
+          logged: true,
+          user: responseData,
+          role: responseData.userType,
+          token: responseData.token,
         });
         toast.success("Registration completed. Transferring to home page...");
         setTimeout(() => {
@@ -49,33 +59,23 @@ const RegisterForm = () => {
         toast.error("Registration failed, try again later.");
       }
     },
-    [registerApi, router, setLoggedProfile]
+    [registerApi, router, role, registrationRole]
   );
 
   useEffect(() => {
     setValidForm(
-      username &&
-        fullname &&
+      fullname &&
         EMAIL_REGEX.test(email) &&
         password &&
         confirmPassword === password
     );
-  }, [username, fullname, email, password, confirmPassword]);
+  }, [fullname, email, password, confirmPassword]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input
         type="text"
-        placeholder="First name"
-        className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
-        {...register("username", {
-          required: true,
-          maxLength: 30,
-        })}
-      />
-      <input
-        type="text"
-        placeholder="Last name"
+        placeholder="Full name"
         className="w-full px-5 py-5 text-gray-300 outline-none mt-7 bg-gray-850"
         {...register("fullname", {
           required: true,
@@ -106,6 +106,43 @@ const RegisterForm = () => {
           maxLength: 30,
         })}
       />
+      <Select
+        unstyled
+        className="text-gray-300 mt-7 bg-gray-850"
+        styles={{
+          valueContainer: (base) => ({
+            ...base,
+            backgroundColor: "rgb(20,29,41)",
+            color: "rgb(141,147,158)",
+            "input:focus": {
+              boxShadow: "none",
+              color: "white",
+            },
+          }),
+          control: (base) => ({
+            ...base,
+            border: "none",
+            color: "white",
+            padding: 20,
+          }),
+          option: (base) => ({
+            ...base,
+            backgroundColor: "rgb(20,29,41)",
+            color: "rgb(141,147,158)",
+            border: "none",
+            padding: 20,
+          }),
+          placeholder: (base) => ({
+            ...base,
+            backgroundColor: "rgb(20,29,41)",
+            border: "none",
+          }),
+        }}
+        defaultValue={registrationRole}
+        onChange={setRegistrationRole as never}
+        options={roleOptions}
+        placeholder="Select Track"
+      />
       <button
         type="submit"
         className="w-full py-5 mt-8 text-sm tracking-wider text-center uppercase rounded-md ont-medium disabled:bg-gray-700 bg-green-550 transition-all hover:bg-opacity-90"
@@ -119,7 +156,7 @@ const RegisterForm = () => {
 
 const LoginForm = () => {
   const router = useRouter();
-  const { setLoggedProfile } = useAccountProfile();
+  const role = useRoleProvider();
   const { login } = useAPIService();
   const { register, handleSubmit, watch } = useForm();
   const [email, password] = watch(["email", "password"]);
@@ -135,10 +172,11 @@ const LoginForm = () => {
       try {
         const responseData = await login(loginPayloadData);
         if (!responseData?.token) throw new Error("Login failed");
-        setLoggedProfile({
-          username: responseData?.username || "",
-          fullname: responseData?.fullname || "",
-          email: responseData?.email || "",
+        role.setRoleState({
+          logged: true,
+          user: responseData,
+          role: responseData.userType,
+          token: responseData.token,
         });
         toast.success("Login completed. Transferring to home page...");
         setTimeout(() => {
@@ -148,7 +186,7 @@ const LoginForm = () => {
         toast.error("Login failed, try again later.");
       }
     },
-    [login, router, setLoggedProfile]
+    [login, router, role]
   );
 
   useEffect(() => {
