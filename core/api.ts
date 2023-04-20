@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useMemo } from "react";
 
+import { useRoleProvider } from "../providers";
 import useLocalStorage from "../src/hooks/useLocalStorage";
 import { API_URL } from "./config";
 import {
@@ -17,24 +18,17 @@ import {
 } from "./types";
 
 export const useAPIService = () => {
-  const [token, setToken] = useLocalStorage("access_token", "");
-
-  useEffect(() => {
-    if (window) {
-      const accessToken = window.localStorage.getItem("access_token");
-      setToken(accessToken || "");
-    }
-  }, [setToken]);
+  const { state, setRoleState } = useRoleProvider();
 
   const config = useMemo(() => {
     const headers: Record<string, string> = { ContentType: "application/json" };
 
-    if (token.startsWith("ey")) {
-      headers["Authorization"] = `Bearer ${token}`;
+    if (state.token.startsWith("ey")) {
+      headers["Authorization"] = `Bearer ${state.token}`;
     }
 
     return headers;
-  }, [token]);
+  }, [state]);
 
   const login = async (data: LoginPayloadDTO) => {
     try {
@@ -42,7 +36,7 @@ export const useAPIService = () => {
         `${API_URL}/auth/authenticate`,
         data
       );
-      setToken(response.data.token);
+      setRoleState({ token: response.data.token, role: "STUDENT", user: {} });
       return response.data;
     } catch (error) {
       console.log("Error occured: ", error);
@@ -56,7 +50,7 @@ export const useAPIService = () => {
         data,
         config
       );
-      setToken(response.data.token);
+      setRoleState({ token: response.data.token, role: "STUDENT", user: {} });
       return response.data;
     } catch (error) {
       console.log("Error occurred when signing up: ", error);
