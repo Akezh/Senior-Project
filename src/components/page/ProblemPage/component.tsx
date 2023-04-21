@@ -10,6 +10,7 @@ import { axiosApi } from "../../../../core/config";
 import { useRoleProvider } from "../../../../providers";
 import { config, examples, langConfig } from "../../../config";
 import { useInterval } from "../../../hooks";
+import { Modal } from "../../organisms";
 import { PageTemplate } from "../../templates";
 
 const TABS = ["Statement", "Submissions", "Solution"];
@@ -19,7 +20,11 @@ const MarkdownPreview = dynamic(
   { ssr: false }
 );
 
-export const MySumbmissions: FC<any> = ({ submissions, setCodeValue }) => {
+export const MySumbmissions: FC<any> = ({
+  submissions,
+  setCodeValue,
+  setModalContent,
+}) => {
   if (submissions.length === 0) {
     return (
       <p className="text-gray-300">You did not make any submissions yet.</p>
@@ -63,7 +68,23 @@ export const MySumbmissions: FC<any> = ({ submissions, setCodeValue }) => {
                 Use
               </button>
             </td>
-            <td className="px-4 py-3">{submission.verdict}</td>
+            <td className="px-4 py-3">
+              <button
+                className={clsx(
+                  submission.verdict === "testing"
+                    ? "cursor-default"
+                    : "underline"
+                )}
+                onClick={() => {
+                  if (submission.verdict !== "testing") {
+                    setModalContent(submission.verdict);
+                  }
+                }}
+              >
+                {submission.verdict.charAt(0).toUpperCase() +
+                  submission.verdict.slice(1)}
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>
@@ -82,6 +103,7 @@ export const ProblemPage = () => {
   const role = useRoleProvider();
   const [problemDetails, setProblemDetails] = useState<any>(null);
   const editorRef = useRef(null);
+  const [modalContent, setModalContent] = useState<string>("");
 
   useEffect(() => {
     const fetchProblemDetails = async () => {
@@ -137,6 +159,7 @@ export const ProblemPage = () => {
 
   return (
     <PageTemplate offDefaultStyles>
+      <Modal modalContent={modalContent} setModalContent={setModalContent} />
       <div className="flex">
         <div
           className="flex-1 overflow-y-scroll"
@@ -176,6 +199,7 @@ export const ProblemPage = () => {
                   <MySumbmissions
                     submissions={submissions}
                     setCodeValue={setCodeValue}
+                    setModalContent={setModalContent}
                   />
                 ) : (
                   <p className="text-gray-300">
