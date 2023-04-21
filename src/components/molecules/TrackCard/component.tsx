@@ -41,7 +41,7 @@ export const TrackCard: FC<Props> = ({
         )}
       </div>
       <p className="mt-4 ml-2 text-lg font-bold text-white">{title}</p>
-      <p className="hidden mt-1 ml-2 text-sm" style={{ color: "#909FB8" }}>
+      <p className="mt-1 ml-2 text-sm" style={{ color: "#909FB8" }}>
         {subtitle}
       </p>
     </Link>

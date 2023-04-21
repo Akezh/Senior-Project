@@ -43,16 +43,18 @@ export const CoursesPage = () => {
 
         <div className="mt-8 grid md:grid-cols-5 gap-10 grid-cols-3">
           {courses === null && <Spinner className="w-8" />}
-          {courses?.map(({ id, title, category, difficulty }) => (
-            <TrackCard
-              key={title}
-              id={id}
-              title={title}
-              subtitle="10 problems"
-              difficulty={difficulty}
-              imageSrc={`/${category}.png`}
-            />
-          ))}
+          {courses?.map(
+            ({ id, title, category, difficulty, numberOfProblems }) => (
+              <TrackCard
+                key={title}
+                id={id}
+                title={title}
+                subtitle={`${numberOfProblems} problem(s)`}
+                difficulty={difficulty}
+                imageSrc={`/${category}.png`}
+              />
+            )
+          )}
         </div>
       </div>
     </PageTemplate>

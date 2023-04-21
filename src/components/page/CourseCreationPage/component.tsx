@@ -33,7 +33,7 @@ export const CourseCreationPage = () => {
 
     try {
       // TODO: Dulat will solve CORS issues and this will work!
-      axiosApi.post("/track", {
+      await axiosApi.post("/track", {
         title: trackTitle,
         category: category.value,
         difficulty: difficulty.value,

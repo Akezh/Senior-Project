@@ -16,4 +16,7 @@ export const examples: Record<string, string> = {
       return 0;
     } 
   `),
+  python: rTabs(`
+    print("Hello world!")
+  `),
 };

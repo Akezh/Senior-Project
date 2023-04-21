@@ -2,14 +2,15 @@ import Editor from "@monaco-editor/react";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import Select from "react-select";
+import { toast } from "react-toastify";
 
 import { axiosApi } from "../../../../core/config";
 import { useRoleProvider } from "../../../../providers";
 import { config, examples, langConfig } from "../../../config";
+import { useInterval } from "../../../hooks";
 import { PageTemplate } from "../../templates";
-import { PROBLEM_EDITORIAL, PROBLEM_STATEMENT } from "./mock";
 
 const TABS = ["Statement", "Submissions", "Solution"];
 
@@ -18,7 +19,13 @@ const MarkdownPreview = dynamic(
   { ssr: false }
 );
 
-export const MySumbmissions = () => {
+export const MySumbmissions: FC<any> = ({ submissions }) => {
+  if (submissions.length === 0) {
+    return (
+      <p className="text-gray-300">You did not make any submissions yet.</p>
+    );
+  }
+
   return (
     <table className="w-full text-left whitespace-no-wrap table-auto submissions">
       <thead>
@@ -37,19 +44,21 @@ export const MySumbmissions = () => {
           </th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td className="px-4 py-3">Start</td>
-          <td className="px-4 py-3">5 Mb/s</td>
-          <td className="px-4 py-3">15 GB</td>
-          <td className="px-4 py-3 text-lg">Free</td>
-        </tr>
-        <tr>
-          <td className="px-4 py-3 border-t border-gray-600">Pro</td>
-          <td className="px-4 py-3 border-t border-gray-600">25 Mb/s</td>
-          <td className="px-4 py-3 border-t border-gray-600">25 GB</td>
-          <td className="px-4 py-3 text-lg border-t border-gray-600">$24</td>
-        </tr>
+      <tbody className="text-gray-300">
+        {submissions.map((submission: any, i: number) => (
+          <tr key={i}>
+            <td className="px-4 py-3">
+              {`${new Date(submission.date).toDateString()}, ${new Date(
+                submission.date
+              ).toLocaleTimeString()}`}
+            </td>
+            <td className="px-4 py-3">{submission.language}</td>
+            <td className="px-4 py-3">
+              <button className="underline">Use</button>
+            </td>
+            <td className="px-4 py-3">{submission.verdict}</td>
+          </tr>
+        ))}
       </tbody>
     </table>
   );
@@ -62,18 +71,58 @@ export const ProblemPage = () => {
     label: langConfig[0].label,
   });
   const [activeTab, setActiveTab] = useState(0);
+  const [submissions, setSubmissions] = useState([]);
   const role = useRoleProvider();
   const [problemDetails, setProblemDetails] = useState<any>(null);
+  const editorRef = useRef(null);
 
   useEffect(() => {
     const fetchProblemDetails = async () => {
       const { data } = await axiosApi.get(`/problem/${router.query.id}`);
+      console.log(router.query.id);
       setProblemDetails(data);
       console.log(data);
     };
 
     if (router.query.id) fetchProblemDetails();
   }, [router]);
+
+  const submitSubmission = async () => {
+    await axiosApi.post(
+      `/submission`,
+      {
+        problemId: router.query.id,
+        language: language.value,
+        code: (editorRef.current as any).getValue(),
+      },
+      { headers: { Authorization: `Bearer ${role.state.token}` } }
+    );
+    toast.success("Submitted solution. Await for verdict.");
+    setActiveTab(1);
+  };
+
+  const fetchSubmissions = async () => {
+    if (role.state.logged && router.query.id) {
+      const { data } = await axiosApi.get(
+        `/submission/problem/${router.query.id}`,
+        {
+          headers: { Authorization: `Bearer ${role.state.token}` },
+        }
+      );
+      setSubmissions(
+        data.sort((x: any, y: any) =>
+          new Date(x.date) > new Date(y.date) ? -1 : 1
+        )
+      );
+      setSubmissions(data);
+    }
+  };
+
+  function handleEditorDidMount(editor: any) {
+    editorRef.current = editor;
+  }
+
+  useInterval(fetchSubmissions, 1000);
 
   return (
     <PageTemplate offDefaultStyles>
@@ -103,14 +152,17 @@ export const ProblemPage = () => {
             {activeTab === 0 && (
               <div>
                 <h3 className="my-6 text-2xl font-bold">Two sum</h3>
-                <MarkdownPreview className="mt-4" source={PROBLEM_STATEMENT} />
+                <MarkdownPreview
+                  className="mt-4"
+                  source={problemDetails?.statement}
+                />
               </div>
             )}
             {activeTab === 1 && (
               <div>
                 <h3 className="my-6 text-2xl font-bold">My submissions</h3>
                 {role.state.logged ? (
-                  <MySumbmissions />
+                  <MySumbmissions submissions={submissions} />
                 ) : (
                   <p className="text-gray-300">
                     Please login to view your submissions for this problem.
@@ -121,14 +173,17 @@ export const ProblemPage = () => {
             {activeTab === 2 && (
               <div>
                 <h3 className="my-6 text-2xl font-bold">Solution</h3>
-                <MarkdownPreview className="mt-4" source={PROBLEM_EDITORIAL} />
+                <MarkdownPreview
+                  className="mt-4"
+                  source={problemDetails?.solution}
+                />
               </div>
             )}
           </div>
         </div>
         <div className="flex-1">
           <Select
-            className="w-24 my-4 text-black"
+            className="w-32 my-4 text-black"
             defaultValue={language}
             onChange={setLanguage as never}
             options={langConfig}
@@ -143,6 +198,7 @@ export const ProblemPage = () => {
               defaultValue={examples[language?.value as string]}
               path={language?.value || config.defaultLanguage}
               language={language?.value || config.defaultLanguage}
+              onMount={handleEditorDidMount}
             />
           </div>
           <div className="flex">
@@ -151,6 +207,7 @@ export const ProblemPage = () => {
             </button>
             <button
               className="px-4 py-2 mt-4 text-sm font-medium tracking-wider text-center bg-gray-700 sm:px-6 sm:w-auto sm:justify-start title-font text-green-550 bg-opacity-10 rounded-md hover:opacity-80 transition-opacity disabled:opacity-70 disabled:cursor-not-allowed"
+              onClick={submitSubmission}
               disabled={!role.state.logged}
             >
               Submit
