@@ -29,6 +29,8 @@ export const CoursePage = () => {
   const [allSelectionProblems, setAllSelectionProblems] = useState<
     Array<Option>
   >([]);
+  const [defaultValueForSelection, setDefaultValueForSelection] =
+    useState<Array<Option>>();
 
   const createProblem = () => {
     router.push("/problem/create");
@@ -43,10 +45,10 @@ export const CoursePage = () => {
   };
 
   useEffect(() => {
-    if (id) fetchCourseDetails();
-  }, [id]);
+    (async () => {
+      if (id) await fetchCourseDetails();
+    })();
 
-  useEffect(() => {
     getAllProblems().then((problemsArr) => {
       const problems = problemsArr?.map((n) => ({
         label: `${n.id} ${n.title}`,
@@ -55,7 +57,16 @@ export const CoursePage = () => {
       problems && setAllSelectionProblems(problems);
       problemsArr && setTrackProblems(problemsArr);
     });
-  }, []);
+
+    const defaultSelectorValues: Array<Option> =
+      courseDetails?.problems?.map((n: Record<string, string>) => ({
+        label: `${n?.id || ""} ${n?.title || ""}`,
+        value: `${n?.id || ""} ${n?.title || ""}`,
+      })) || [];
+
+    setDefaultValueForSelection(defaultSelectorValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const onChange = async (
     newValue: OnChangeValue<Option, true>,
@@ -131,7 +142,7 @@ export const CoursePage = () => {
           className="mb-16"
           closeMenuOnSelect={false}
           components={animatedComponents}
-          defaultValue={[]}
+          defaultValue={defaultValueForSelection}
           options={allSelectionProblems}
           isMulti
           onChange={onChange}

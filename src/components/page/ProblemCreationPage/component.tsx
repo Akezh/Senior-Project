@@ -1,14 +1,13 @@
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 
-import axios from "axios";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { ChangeEvent, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
 
-import { API_URL, axiosApi } from "../../../../core/config";
+import { axiosApi } from "../../../../core/config";
 import { Stepper } from "../../organisms/Stepper";
 import { PageTemplate } from "../../templates";
 import { categoryOptions, difficultyOptions } from "./selectorOptions";
@@ -79,7 +78,6 @@ export const ProblemCreationPage = () => {
   };
 
   const handleSubmit = async () => {
-    // TODO: Dulat will solve CORS and this will work!
     if (!testCases || Object.keys(testCases).length === 0) {
       toast.error("Please add test cases");
       return;
