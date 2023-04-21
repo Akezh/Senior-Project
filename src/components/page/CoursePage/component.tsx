@@ -54,7 +54,7 @@ export const CoursePage = () => {
 
         getAllProblems().then((problemsArr) => {
           const problems = problemsArr?.map((n) => ({
-            label: `${n.id} ${n.title}`,
+            label: `${n.id} - ${n.title}`,
             value: `${n.id} ${n.title}`,
           }));
           problems && setAllSelectionProblems(problems);
@@ -157,7 +157,7 @@ export const CoursePage = () => {
         <p className="mt-4 mb-6 text-gray-400">{courseDetails?.description}</p>
 
         <Select
-          className="mb-8"
+          className="mb-8 text-black"
           closeMenuOnSelect={false}
           components={animatedComponents}
           value={defaultValueForSelection}
