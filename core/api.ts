@@ -5,8 +5,10 @@ import { useRoleProvider } from "../providers";
 import { API_URL } from "./config";
 import {
   AddProblemPayloadDTO,
+  AddProblemToTrackPayloadDTO,
   AddTrackPayloadDTO,
   CommonResponseDTO,
+  GetAllProblemsDTO,
   GetProblemByIdResponseDTO,
   GetTrackByIdResponseDTO,
   GetTracksResponseDTO,
@@ -64,6 +66,44 @@ export const useAPIService = () => {
     }
   };
 
+  const addProblemToTrack = async (data: AddProblemToTrackPayloadDTO) => {
+    try {
+      const response = await axios.post<CommonResponseDTO>(
+        `${API_URL}/track/problem`,
+        data,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error occurred when adding a problem: ", error);
+    }
+  };
+
+  const deleteProblemFromTrack = async (data: AddProblemToTrackPayloadDTO) => {
+    try {
+      const response = await axios.post<CommonResponseDTO>(
+        `${API_URL}/track/${data.trackId}/problem/${data.problemId}/delete`,
+        {},
+        config
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error occurred when adding a problem: ", error);
+    }
+  };
+
+  const getAllProblems = async () => {
+    try {
+      const response = await axios.get<GetAllProblemsDTO>(
+        `${API_URL}/problem`,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error occured when getting problem with id: ", error);
+    }
+  };
+
   const getProblemById = async (id: number) => {
     try {
       const response = await axios.get<GetProblemByIdResponseDTO>(
@@ -117,6 +157,9 @@ export const useAPIService = () => {
     login,
     register,
     addProblem,
+    addProblemToTrack,
+    deleteProblemFromTrack,
+    getAllProblems,
     getProblemById,
     addTrack,
     getTrackById,

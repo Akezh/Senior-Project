@@ -1,34 +1,107 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Select, { ActionMeta, OnChangeValue } from "react-select";
+import makeAnimated from "react-select/animated";
 
+import { useAPIService } from "../../../../core/api";
 import { axiosApi } from "../../../../core/config";
+import { GetAllProblemsDTO } from "../../../../core/types";
 import { useRoleProvider } from "../../../../providers";
 import { ProblemCard, Spinner } from "../../molecules";
 import { PageTemplate } from "../../templates";
 
+const animatedComponents = makeAnimated();
+
+type Option = {
+  label: string;
+  value: string;
+};
+
 export const CoursePage = () => {
+  const { getAllProblems, addProblemToTrack, deleteProblemFromTrack } =
+    useAPIService();
   const router = useRouter();
   const { id } = router.query;
   const role = useRoleProvider();
   const [courseDetails, setCourseDetails] = useState<any>(null);
+  const [trackProblems, setTrackProblems] = useState<GetAllProblemsDTO>([]);
+  const [allSelectionProblems, setAllSelectionProblems] = useState<
+    Array<Option>
+  >([]);
 
   const createProblem = () => {
     router.push("/problem/create");
   };
 
-  useEffect(() => {
-    const fetchCourseDetails = async () => {
-      const { data } = await axiosApi.get(`/track/${id}`);
-      const { data: problems } = await axiosApi.get(`/track/${id}/problems`, {
-        headers: { Authorization: `Bearer ${role.state.token}` },
-      });
-      console.log({ ...data, problems });
-      setCourseDetails({ ...data, problems });
-    };
+  const fetchCourseDetails = async () => {
+    const { data } = await axiosApi.get(`/track/${id}`);
+    const { data: problems } = await axiosApi.get(`/track/${id}/problems`, {
+      headers: { Authorization: `Bearer ${role.state.token}` },
+    });
+    setCourseDetails({ ...data, problems });
+  };
 
+  useEffect(() => {
     if (id) fetchCourseDetails();
-  }, [id, role]);
+  }, [id]);
+
+  useEffect(() => {
+    getAllProblems().then((problemsArr) => {
+      const problems = problemsArr?.map((n) => ({
+        label: `${n.id} ${n.title}`,
+        value: `${n.id} ${n.title}`,
+      }));
+      problems && setAllSelectionProblems(problems);
+      problemsArr && setTrackProblems(problemsArr);
+    });
+  }, []);
+
+  const onChange = async (
+    newValue: OnChangeValue<Option, true>,
+    actionMeta: ActionMeta<Option>
+  ) => {
+    let allAddedProblems: OnChangeValue<Option, true> = [];
+
+    switch (actionMeta.action) {
+      case "remove-value":
+      case "pop-value":
+      case "clear":
+      case "select-option":
+        allAddedProblems = newValue;
+        break;
+    }
+
+    const addedProblems = trackProblems.filter((n) => {
+      const problem = allAddedProblems.find(
+        (m) => m.value === `${n.id} ${n.title}`
+      );
+      return !!problem;
+    });
+
+    const removedProblems = trackProblems.filter((n) => {
+      const problem = allAddedProblems.find(
+        (m) => m.value === `${n.id} ${n.title}`
+      );
+      return !problem;
+    });
+
+    addedProblems.forEach((problem) => {
+      addProblemToTrack({
+        trackId: courseDetails.id,
+        problemId: String(problem.id),
+      });
+    });
+
+    removedProblems.forEach((problem) => {
+      deleteProblemFromTrack({
+        trackId: courseDetails.id,
+        problemId: String(problem.id),
+      });
+    });
+
+    await fetchCourseDetails();
+  };
 
   return (
     <PageTemplate>
@@ -53,6 +126,17 @@ export const CoursePage = () => {
           </button>
         </div>
         <p className="mt-4 mb-6 text-gray-400">{courseDetails?.description}</p>
+
+        <Select
+          className="mb-16"
+          closeMenuOnSelect={false}
+          components={animatedComponents}
+          defaultValue={[]}
+          options={allSelectionProblems}
+          isMulti
+          onChange={onChange}
+        />
+
         <div className="grid grid-rows-20 gap-4">
           {courseDetails?.problems?.map(
             ({ id, title, description }: any, index: number) => (

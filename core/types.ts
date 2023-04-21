@@ -30,9 +30,24 @@ export type AddProblemPayloadDTO = {
   testCases: string;
 };
 
+export type AddProblemToTrackPayloadDTO = {
+  trackId: string;
+  problemId: string;
+};
+
 export type CommonResponseDTO = {
   message: string;
 };
+
+export type GetAllProblemsDTO = Array<{
+  id: number | string;
+  title: string;
+  description: string;
+  category: string;
+  difficulty: string;
+  statement: string;
+  solution: string;
+}>;
 
 export type GetProblemByIdResponseDTO = {
   id: number;
