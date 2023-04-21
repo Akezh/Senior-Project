@@ -42,31 +42,39 @@ export const CoursePage = () => {
       headers: { Authorization: `Bearer ${role.state.token}` },
     });
     setCourseDetails({ ...data, problems });
+    return { ...data, problems };
   };
 
   useEffect(() => {
     (async () => {
-      if (id) await fetchCourseDetails();
+      if (id) {
+        const courseDetails = await fetchCourseDetails();
+
+        console.log("courseDetails", courseDetails.problems);
+
+        getAllProblems().then((problemsArr) => {
+          const problems = problemsArr?.map((n) => ({
+            label: `${n.id} ${n.title}`,
+            value: `${n.id} ${n.title}`,
+          }));
+          problems && setAllSelectionProblems(problems);
+          problemsArr && setTrackProblems(problemsArr);
+        });
+
+        const defaultSelectorValues: Array<Option> =
+          courseDetails?.problems?.map((n: Record<string, string>) => ({
+            label: `${n?.id || ""} - ${n?.title || ""}`,
+            value: `${n?.id || ""} ${n?.title || ""}`,
+          })) || [];
+
+        console.log("defaultValueForSelection", defaultSelectorValues);
+
+        setDefaultValueForSelection(defaultSelectorValues);
+      }
     })();
 
-    getAllProblems().then((problemsArr) => {
-      const problems = problemsArr?.map((n) => ({
-        label: `${n.id} ${n.title}`,
-        value: `${n.id} ${n.title}`,
-      }));
-      problems && setAllSelectionProblems(problems);
-      problemsArr && setTrackProblems(problemsArr);
-    });
-
-    const defaultSelectorValues: Array<Option> =
-      courseDetails?.problems?.map((n: Record<string, string>) => ({
-        label: `${n?.id || ""} ${n?.title || ""}`,
-        value: `${n?.id || ""} ${n?.title || ""}`,
-      })) || [];
-
-    setDefaultValueForSelection(defaultSelectorValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [id, role]);
 
   const onChange = async (
     newValue: OnChangeValue<Option, true>,
@@ -111,7 +119,17 @@ export const CoursePage = () => {
       });
     });
 
-    await fetchCourseDetails();
+    const newCourseDetails = await fetchCourseDetails();
+
+    const defaultSelectorValues: Array<Option> =
+      newCourseDetails?.problems?.map((n: Record<string, string>) => ({
+        label: `${n?.id || ""} - ${n?.title || ""}`,
+        value: `${n?.id || ""} ${n?.title || ""}`,
+      })) || [];
+
+    console.log("here defaultValueForSelection", defaultSelectorValues);
+
+    setDefaultValueForSelection(defaultSelectorValues);
   };
 
   return (
@@ -139,10 +157,10 @@ export const CoursePage = () => {
         <p className="mt-4 mb-6 text-gray-400">{courseDetails?.description}</p>
 
         <Select
-          className="mb-16"
+          className="mb-8"
           closeMenuOnSelect={false}
           components={animatedComponents}
-          defaultValue={defaultValueForSelection}
+          value={defaultValueForSelection}
           options={allSelectionProblems}
           isMulti
           onChange={onChange}
