@@ -3,6 +3,7 @@ import "@uiw/react-markdown-preview/markdown.css";
 
 import axios from "axios";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
 import { ChangeEvent, useState } from "react";
 import Select from "react-select";
 import { toast } from "react-toastify";
@@ -26,6 +27,7 @@ const MDEditor = dynamic(
 );
 
 export const ProblemCreationPage = () => {
+  const router = useRouter();
   const [stepperActive, setStepperActive] = useState(1);
   const [complete, setComplete] = useState(false);
   const [problemDescription, setProblemDescription] = useState("");
@@ -34,7 +36,7 @@ export const ProblemCreationPage = () => {
   const [title, setTitle] = useState("");
   const [track, setTrack] = useState("");
   const [difficulty, setDifficulty] = useState({
-    value: "Easy",
+    value: "EASY",
     label: "Easy",
   });
   const [categories, setCategories] = useState<any[] | null>(null);
@@ -98,6 +100,7 @@ export const ProblemCreationPage = () => {
     try {
       await axiosApi.post("/problem", problemData);
       toast.success("Problem has been created successfully");
+      router.push("/");
     } catch (err) {
       toast.error("Error while creating the problem");
       console.log(err);

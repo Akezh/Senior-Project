@@ -24,24 +24,24 @@ export const TrackCard: FC<Props> = ({
         className="flex justify-center p-4 align-center rounded-bl-xl rounded-br-xl"
         style={{ background: "#0F1926" }}
       >
-        {difficulty === "easy" && (
+        {difficulty === "EASY" && (
           <p className="text-base uppercase" style={{ color: "#9FEE3D" }}>
             EASY
           </p>
         )}
-        {difficulty === "medium" && (
+        {difficulty === "MEDIUM" && (
           <p className="text-base uppercase" style={{ color: "#F3B23E" }}>
             MEDIUM
           </p>
         )}
-        {difficulty === "hard" && (
+        {difficulty === "HARD" && (
           <p className="text-base uppercase" style={{ color: "#EC5048" }}>
             HARD
           </p>
         )}
       </div>
       <p className="mt-4 ml-2 text-lg font-bold text-white">{title}</p>
-      <p className="mt-1 ml-2 text-sm" style={{ color: "#909FB8" }}>
+      <p className="hidden mt-1 ml-2 text-sm" style={{ color: "#909FB8" }}>
         {subtitle}
       </p>
     </Link>

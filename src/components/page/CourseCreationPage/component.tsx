@@ -21,7 +21,7 @@ export const CourseCreationPage = () => {
     label: categoryOptions[0].label,
   });
   const [difficulty, setDifficulty] = useState({
-    value: "Easy",
+    value: "EASY",
     label: "Easy",
   });
 
