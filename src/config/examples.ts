@@ -5,14 +5,17 @@ export const examples: Record<string, string> = {
     #include <stdio.h>
 
     int main(int argc, char **argv) {
-      printf("Love Akezhan");
+      printf("Hello world!");
     } 
   `),
   cpp: rTabs(`
     #include <iostream>
+    #include <vector>
+    #include <algorithm>
+
+    using namespace std;
 
     int main() {
-      std::cout << "Love Akezhan";
       return 0;
     } 
   `),

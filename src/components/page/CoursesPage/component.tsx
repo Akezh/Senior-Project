@@ -38,7 +38,7 @@ export const CoursesPage = () => {
         </div>
         <p className="text-base text-white" style={{ color: "#9FAEC8" }}>
           Tracks are created by your instructors and you can solve them with
-          tracking your progres.
+          tracking your progress.
         </p>
 
         <div className="mt-8 grid md:grid-cols-5 gap-10 grid-cols-3">

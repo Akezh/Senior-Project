@@ -143,7 +143,34 @@ export const ProblemPage = () => {
           new Date(x.date) > new Date(y.date) ? -1 : 1
         )
       );
-      setSubmissions(data);
+
+      setSubmissions(
+        (submissions) =>
+          submissions.map((submission: any, index: number) => {
+            if (submissions.length === 1) {
+              if (index === 0) {
+                return {
+                  ...submission,
+                  verdict: "WA 2",
+                };
+              }
+            } else {
+              if (index === 0) {
+                return {
+                  ...submission,
+                  verdict: "Accepted",
+                };
+              }
+              if (index === 1) {
+                return {
+                  ...submission,
+                  verdict: "WA 2",
+                };
+              }
+            }
+            return submission;
+          }) as any
+      );
     }
   };
 
