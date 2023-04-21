@@ -1,16 +1,28 @@
+import clsx from "clsx";
 import Link from "next/link";
 import { FC } from "react";
+import { TiTick } from "react-icons/ti";
 
 import { Props } from "./props";
 
-export const ProblemCard: FC<Props> = ({ title, subtitle, link }) => {
+export const ProblemCard: FC<Props> = ({ title, subtitle, link, solved }) => {
   return (
     <div
       className="flex justify-between p-8 align-center"
       style={{ background: "#0A121D" }}
     >
       <div>
-        <p className="text-2xl font-bold text-white">{title}</p>
+        <div className="flex items-center">
+          <p
+            className={clsx(
+              "text-2xl font-bold",
+              solved ? "text-green-500" : "text-white"
+            )}
+          >
+            {title}
+          </p>
+          {solved && <TiTick className="text-2xl text-green-500" />}
+        </div>
         <p
           className="mt-2 text-sm font-bold text-white"
           style={{ color: "#909FB8" }}

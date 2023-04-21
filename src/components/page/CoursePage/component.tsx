@@ -156,24 +156,27 @@ export const CoursePage = () => {
         </div>
         <p className="mt-4 mb-6 text-gray-400">{courseDetails?.description}</p>
 
-        <Select
-          className="mb-8 text-black"
-          closeMenuOnSelect={false}
-          components={animatedComponents}
-          value={defaultValueForSelection}
-          options={allSelectionProblems}
-          isMulti
-          onChange={onChange}
-        />
+        {role.state.role === "TEACHER" && (
+          <Select
+            className="mb-8 text-black"
+            closeMenuOnSelect={false}
+            components={animatedComponents}
+            value={defaultValueForSelection}
+            options={allSelectionProblems}
+            isMulti
+            onChange={onChange}
+          />
+        )}
 
         <div className="grid grid-rows-20 gap-4">
           {courseDetails?.problems?.map(
-            ({ id, title, description }: any, index: number) => (
+            ({ id, title, description, solved }: any, index: number) => (
               <ProblemCard
                 key={index}
                 title={title}
                 subtitle={description}
                 link={`/problem/${id}`}
+                solved={solved}
               />
             )
           )}
