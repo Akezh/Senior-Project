@@ -42,7 +42,7 @@ export const ProblemCreationPage = () => {
   const [categories, setCategories] = useState<any[] | null>(null);
   const [solutions, setSolutions] = useState("");
 
-  const [countTestCases, setCountTestCases] = useState(1);
+  // const [countTestCases, setCountTestCases] = useState(1);
   const [testCases, setTestCases] = useState<TestCase>({
     0: {
       input: "",
@@ -59,11 +59,9 @@ export const ProblemCreationPage = () => {
   };
   const handleBack = () => setStepperActive((step) => step - 1);
   const addTestCase = () => {
-    setCountTestCases((prev) => prev + 1);
-
     setTestCases((prev) => ({
       ...prev,
-      [countTestCases + 1]: {
+      [Object.keys(prev).length]: {
         input: "",
         output: "",
       },
@@ -71,10 +69,11 @@ export const ProblemCreationPage = () => {
   };
 
   const removeTestCase = () => {
-    setCountTestCases((prev) => prev - 1);
     setTestCases((prev) => {
+      if (Object.keys(prev).length === 1) return prev;
+
       const newTestCases = { ...prev };
-      delete newTestCases[countTestCases];
+      delete newTestCases[Object.keys(prev).length - 1];
       return newTestCases;
     });
   };
@@ -112,13 +111,17 @@ export const ProblemCreationPage = () => {
     fieldIndex: number,
     e: ChangeEvent<HTMLTextAreaElement>
   ) => {
-    setTestCases((prev) => ({
-      ...prev,
-      [fieldIndex]: {
-        ...prev[fieldIndex],
-        input: e.target.value,
-      },
-    }));
+    setTestCases((prev) => {
+      console.log("prev", prev);
+
+      return {
+        ...prev,
+        [fieldIndex]: {
+          ...prev[fieldIndex],
+          input: e.target.value,
+        },
+      };
+    });
   };
 
   const handleOutputAreaChange = (
