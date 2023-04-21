@@ -19,7 +19,7 @@ const MarkdownPreview = dynamic(
   { ssr: false }
 );
 
-export const MySumbmissions: FC<any> = ({ submissions }) => {
+export const MySumbmissions: FC<any> = ({ submissions, setCodeValue }) => {
   if (submissions.length === 0) {
     return (
       <p className="text-gray-300">You did not make any submissions yet.</p>
@@ -54,7 +54,14 @@ export const MySumbmissions: FC<any> = ({ submissions }) => {
             </td>
             <td className="px-4 py-3">{submission.language}</td>
             <td className="px-4 py-3">
-              <button className="underline">Use</button>
+              <button
+                className="underline"
+                onClick={() => {
+                  setCodeValue(submission.code);
+                }}
+              >
+                Use
+              </button>
             </td>
             <td className="px-4 py-3">{submission.verdict}</td>
           </tr>
@@ -122,6 +129,10 @@ export const ProblemPage = () => {
     editorRef.current = editor;
   }
 
+  const setCodeValue = (value: string) => {
+    (editorRef.current as any).setValue(value);
+  };
+
   useInterval(fetchSubmissions, 1000);
 
   return (
@@ -162,7 +173,10 @@ export const ProblemPage = () => {
               <div>
                 <h3 className="my-6 text-2xl font-bold">My submissions</h3>
                 {role.state.logged ? (
-                  <MySumbmissions submissions={submissions} />
+                  <MySumbmissions
+                    submissions={submissions}
+                    setCodeValue={setCodeValue}
+                  />
                 ) : (
                   <p className="text-gray-300">
                     Please login to view your submissions for this problem.
