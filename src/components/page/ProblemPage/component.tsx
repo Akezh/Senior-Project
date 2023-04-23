@@ -77,7 +77,7 @@ export const MySumbmissions: FC<any> = ({
                 )}
                 onClick={() => {
                   if (submission.verdict !== "testing") {
-                    setModalContent(submission.verdict);
+                    setModalContent(submission.verdictMessage);
                   }
                 }}
               >
@@ -143,34 +143,6 @@ export const ProblemPage = () => {
           new Date(x.date) > new Date(y.date) ? -1 : 1
         )
       );
-
-      // setSubmissions(
-      //   (submissions) =>
-      //     submissions.map((submission: any, index: number) => {
-      //       if (submissions.length === 1) {
-      //         if (index === 0) {
-      //           return {
-      //             ...submission,
-      //             verdict: "WA 2",
-      //           };
-      //         }
-      //       } else {
-      //         if (index === 0) {
-      //           return {
-      //             ...submission,
-      //             verdict: "Accepted",
-      //           };
-      //         }
-      //         if (index === 1) {
-      //           return {
-      //             ...submission,
-      //             verdict: "WA 2",
-      //           };
-      //         }
-      //       }
-      //       return submission;
-      //     }) as any
-      // );
     }
   };
 
@@ -212,10 +184,13 @@ export const ProblemPage = () => {
           <div className="pb-10 text-white px-7">
             {activeTab === 0 && (
               <div>
-                <h3 className="my-6 text-2xl font-bold">Two sum</h3>
+                <h3 className="my-6 text-2xl font-bold">
+                  {problemDetails?.title}
+                </h3>
                 <MarkdownPreview
                   className="mt-4"
                   source={problemDetails?.statement}
+                  warpperElement={{ "data-color-mode": "dark" }}
                 />
               </div>
             )}
@@ -241,6 +216,7 @@ export const ProblemPage = () => {
                 <MarkdownPreview
                   className="mt-4"
                   source={problemDetails?.solution}
+                  warpperElement={{ "data-color-mode": "dark" }}
                 />
               </div>
             )}

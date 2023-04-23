@@ -66,7 +66,7 @@ export const CourseCreationPage = () => {
                 Title <span className="text-red-500">*</span>
               </p>
               <input
-                className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                className="w-full px-3 py-2 leading-tight text-gray-700 bg-white border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                 type="text"
                 id="problemName"
                 placeholder="Pick a title"
@@ -112,7 +112,7 @@ export const CourseCreationPage = () => {
                 Track description <span className="text-red-500">*</span>
               </p>
               <textarea
-                className="w-full h-20 px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                className="w-full h-20 px-3 py-2 leading-tight text-gray-700 bg-white border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                 placeholder="Track description"
                 value={trackDescription}
                 onChange={(e) => setTrackDescription(e.target.value)}

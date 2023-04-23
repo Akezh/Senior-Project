@@ -22,12 +22,15 @@ export const Modal: React.FC<any> = ({ setModalContent, modalContent }) => {
           onClick={() => setModalContent("")}
         ></div>
 
-        <div className="z-50 w-11/12 mx-auto overflow-y-auto bg-white rounded shadow-lg modal-container md:max-w-lg">
+        <div
+          className="z-50 w-11/12 mx-auto overflow-scroll overflow-y-auto bg-white rounded shadow-lg modal-container md:max-w-2xl"
+          style={{ maxHeight: "calc(100vh - 100px)" }}
+        >
           <div className="px-6 py-4 text-left modal-content">
             <div className="flex items-center justify-between pb-3">
               <p className="text-2xl font-bold">Submission summary</p>
             </div>
-            <p>{modalContent}</p>
+            <p className="whitespace-pre">{modalContent}</p>
 
             {/* <div className="flex justify-end pt-2">
               <button

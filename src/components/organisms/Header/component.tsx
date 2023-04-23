@@ -38,7 +38,7 @@ export const Header: FC = () => {
 
   return (
     <header>
-      <nav className="px-4 bg-white border-gray-200 lg:px-6 py-2.5 dark:bg-gray-800">
+      <nav className="px-4 bg-gray-800 border-gray-200 lg:px-6 py-2.5">
         <div className="flex flex-wrap items-center justify-between mx-auto max-w-screen-xl">
           <Link href="/" className="flex items-center">
             <img

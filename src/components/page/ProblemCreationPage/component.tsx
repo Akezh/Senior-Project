@@ -181,7 +181,7 @@ export const ProblemCreationPage = () => {
                   Title <span style={{ color: "red" }}>*</span>
                 </p>
                 <input
-                  className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                  className="w-full px-3 py-2 leading-tight text-gray-700 bg-white border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                   type="text"
                   id="problemName"
                   placeholder="Pick a title"
@@ -197,7 +197,7 @@ export const ProblemCreationPage = () => {
                   Problem description <span style={{ color: "red" }}>*</span>
                 </p>
                 <input
-                  className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+                  className="w-full px-3 py-2 leading-tight text-gray-700 bg-white border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
                   type="text"
                   id="problemDescription"
                   placeholder="Short description of the problem"
@@ -324,13 +324,13 @@ export const ProblemCreationPage = () => {
                   onChange={(e) => setTitle(e.target.value)}
                 /> */}
                   <textarea
-                    className="block w-full p-2 mt-1 text-black border-gray-300 appearance-none h-18 rounded-md shadow-sm sm:text-sm focus:outline-none focus:shadow-outline"
+                    className="block w-full p-2 mt-1 text-black bg-white border-gray-300 appearance-none h-18 rounded-md shadow-sm sm:text-sm focus:outline-none focus:shadow-outline"
                     placeholder={`Input ${fieldIndex + 1}`}
                     value={testCases[testNumber].input}
                     onChange={(e) => handleInputAreaChange(fieldIndex, e)}
                   ></textarea>
                   <textarea
-                    className="block w-full p-2 mt-1 text-black border-gray-300 appearance-none h-18 rounded-md shadow-sm sm:text-sm focus:outline-none focus:shadow-outline"
+                    className="block w-full p-2 mt-1 text-black bg-white border-gray-300 appearance-none h-18 rounded-md shadow-sm sm:text-sm focus:outline-none focus:shadow-outline"
                     placeholder={`Output ${fieldIndex + 1}`}
                     value={testCases[testNumber].output}
                     onChange={(e) => handleOutputAreaChange(fieldIndex, e)}
