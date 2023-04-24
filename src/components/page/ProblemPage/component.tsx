@@ -242,17 +242,19 @@ export const ProblemPage = () => {
               onMount={handleEditorDidMount}
             />
           </div>
-          <div className="flex">
-            <button className="hidden px-4 py-2 mt-4 mr-4 text-sm font-medium tracking-wider text-center bg-gray-700 sm:px-6 sm:w-auto sm:justify-start title-font bg-opacity-10 rounded-md">
-              Run code
-            </button>
+          <div className="flex items-center mt-4">
             <button
-              className="px-4 py-2 mt-4 text-sm font-medium tracking-wider text-center bg-gray-700 sm:px-6 sm:w-auto sm:justify-start title-font text-green-550 bg-opacity-10 rounded-md hover:opacity-80 transition-opacity disabled:opacity-70 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm font-medium tracking-wider text-center bg-gray-700 sm:px-6 sm:w-auto sm:justify-start title-font text-green-550 bg-opacity-10 rounded-md hover:opacity-80 transition-opacity disabled:opacity-70 disabled:cursor-not-allowed"
               onClick={submitSubmission}
               disabled={!role.state.logged}
             >
               Submit
             </button>
+            {!role.state.logged && (
+              <p className="ml-3 text-gray-400">
+                Please login to submit your solution
+              </p>
+            )}
           </div>
         </div>
       </div>
